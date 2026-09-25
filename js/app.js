@@ -520,6 +520,7 @@ ${scarcity(slug, true)}
     stickyInit(!!out.sticky);
     if (out.after) out.after();
     fitTitles();
+    if (window.KZMotion) window.KZMotion.rendered();
   }
 
   /* ---------- titres : deux lignes au plus à partir de 768 px ---------- */
@@ -596,7 +597,7 @@ ${scarcity(slug, true)}
   $('#rail-hide').addEventListener('click', () => rail(false));
   $('#rail-tab').addEventListener('click', () => rail(true));
   window.matchMedia('(min-width:1024px)').addEventListener('change', syncAcc);
-  window.addEventListener('hashchange', render);
+  window.addEventListener('hashchange', () => (window.KZMotion ? window.KZMotion.navigate(render) : render()));
 
   let railPref = '1'; try { railPref = localStorage.getItem('kz-rail') || '1'; } catch (e) {}
   rail(railPref !== '0');

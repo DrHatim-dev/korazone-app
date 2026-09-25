@@ -1,0 +1,157 @@
+/* KoraZone — mouvement. Principes : n'animer que transform et opacity, entrées en ease-out,
+   sorties plus courtes (~75 %) en ease-in, 200–300 ms pour l'interface, plus long seulement pour
+   ce que le système déclenche (révélations au défilement, entrée de l'accueil).
+   Tout est désactivé par la règle prefers-reduced-motion de style.css et par js/motion.js. */
+:root{
+  --ease-out:cubic-bezier(.23,1,.32,1);          /* ease-out-quint */
+  --ease-out-soft:cubic-bezier(.33,1,.68,1);     /* ease-out-cubic */
+  --ease-in:cubic-bezier(.32,0,.67,0);           /* ease-in-cubic */
+  --ease-in-out:cubic-bezier(.645,.045,.355,1);  /* ease-in-out-cubic */
+  --ease-back:cubic-bezier(.34,1.56,.64,1);      /* léger dépassement */
+}
+
+/* ---------- transitions de page (View Transitions API) ---------- */
+.hdr{view-transition-name:kz-hdr}
+.rail{view-transition-name:kz-rail}
+.sticky-buy{view-transition-name:kz-sticky}
+::view-transition-group(kz-hdr),::view-transition-group(kz-rail),::view-transition-group(kz-sticky){animation:none}
+::view-transition-old(kz-hdr),::view-transition-new(kz-hdr){animation:none}
+::view-transition-old(root){animation:kz-fade-out .16s var(--ease-in) both}
+::view-transition-new(root){animation:kz-fade-in .26s var(--ease-out-soft) both}
+
+/* photo partagée : la vignette devient la photo de la fiche, et inversement */
+::view-transition-group(kz-shot){animation-duration:.52s;animation-timing-function:var(--ease-in-out);z-index:5}
+::view-transition-old(kz-shot),::view-transition-new(kz-shot){height:100%;object-fit:cover;animation-duration:.52s}
+::view-transition-image-pair(kz-shot){overflow:hidden}
+
+/* étapes de commande : la colonne glisse dans le sens de la navigation */
+::view-transition-group(kz-step){animation:none}
+html[data-kz-vt="fwd"]::view-transition-old(kz-step){animation:kz-out-left .18s var(--ease-in) both}
+html[data-kz-vt="fwd"]::view-transition-new(kz-step){animation:kz-in-right .34s var(--ease-out) both}
+html[data-kz-vt="back"]::view-transition-old(kz-step){animation:kz-out-right .18s var(--ease-in) both}
+html[data-kz-vt="back"]::view-transition-new(kz-step){animation:kz-in-left .34s var(--ease-out) both}
+html[data-kz-vt="fwd"]::view-transition-old(root),html[data-kz-vt="back"]::view-transition-old(root){animation:none}
+html[data-kz-vt="fwd"]::view-transition-new(root),html[data-kz-vt="back"]::view-transition-new(root){animation:none}
+
+@keyframes kz-fade-out{to{opacity:0}}
+@keyframes kz-fade-in{from{opacity:0}}
+@keyframes kz-out-left{to{opacity:0;transform:translateX(-48px)}}
+@keyframes kz-out-right{to{opacity:0;transform:translateX(48px)}}
+@keyframes kz-in-right{from{opacity:0;transform:translateX(64px)}}
+@keyframes kz-in-left{from{opacity:0;transform:translateX(-64px)}}
+
+/* ---------- révélation au défilement (classes posées par motion.js) ---------- */
+.rv{opacity:0;transform:translateY(26px)}
+.rv.in{opacity:1;transform:none;transition:opacity .6s var(--ease-out-soft),transform .8s var(--ease-out);transition-delay:calc(var(--rv-i,0) * 70ms)}
+.rv-img{opacity:0;transform:scale(.94)}
+.rv-img.in{opacity:1;transform:none;transition:opacity .7s var(--ease-out-soft),transform 1s var(--ease-out);transition-delay:calc(var(--rv-i,0) * 90ms)}
+
+/* titres découpés en mots, révélés sous un masque */
+.kz-w{display:inline-block;overflow:hidden;vertical-align:top;padding:.1em 0;margin:-.1em 0}
+.kz-w>span{display:inline-block;will-change:transform}
+
+/* ---------- accueil ---------- */
+.hero-img img{transform-origin:60% 40%}
+@supports (animation-timeline:scroll()){
+  @media (min-width:768px) and (prefers-reduced-motion:no-preference){
+    .hero-img picture{display:block;animation:kz-parallax linear both;animation-timeline:scroll(root);animation-range:0 100vh}
+    .hero-copy{animation:kz-drift linear both;animation-timeline:scroll(root);animation-range:0 70vh}
+  }
+}
+@keyframes kz-parallax{to{transform:translateY(16%) scale(1.06)}}
+@keyframes kz-drift{to{opacity:.15;transform:translateY(-48px)}}
+
+/* fil vertical (téléphone) : le texte de chaque maillot entre quand la carte s'aligne */
+.fx-feed .feed-card .feed-in>*{opacity:0;transform:translateY(22px)}
+.fx-feed .feed-card.is-live .feed-in>*{opacity:1;transform:none;transition:opacity .5s var(--ease-out-soft),transform .7s var(--ease-out);transition-delay:calc(var(--rv-i,0) * 60ms + 80ms)}
+.fx-feed .feed-card>.img img{transform:scale(1.1);transition:opacity .35s,transform 1.4s var(--ease-out)}
+.fx-feed .feed-card.is-live>.img img{transform:none}
+
+/* ---------- survol et appui ---------- */
+.btn{position:relative;overflow:hidden;transition:background .15s,color .15s,border-color .15s,transform .12s var(--ease-out)}
+.btn:active{transform:scale(.97)}
+.btn .wa-ico{transition:transform .4s var(--ease-back)}
+@media (hover:hover){
+  .btn--primary::after,.btn--paper::after,.btn--wa::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.22) 50%,transparent 65%);transform:translateX(-110%)}
+  .btn--paper::after{background:linear-gradient(105deg,transparent 35%,rgba(201,162,74,.28) 50%,transparent 65%)}
+  .btn--primary:hover::after,.btn--paper:hover::after,.btn--wa:hover::after{transform:translateX(110%);transition:transform .75s var(--ease-out)}
+  .btn:hover .wa-ico{transform:rotate(-12deg) scale(1.12)}
+
+  .card{transition:transform .35s var(--ease-out)}
+  .card:hover{transform:translateY(-4px)}
+  .card .img img,.strip-card .img img,.duo-model .img img,.xs .img img,.pick .img img,.duo-figs .img img{transition:opacity .35s,transform .7s var(--ease-out)}
+  .card:hover .img img{transform:scale(1.05)}
+  .card .go{display:inline-block;transition:transform .3s var(--ease-out)}
+  .card:hover .go{transform:translateX(5px)}
+  .strip-card .img{transition:border-color .3s}
+  .strip-card:hover .img{border-color:var(--gold-lt)}
+  .strip-card:hover .img img{transform:scale(1.08)}
+  .strip-card .t{transition:color .2s}
+  .strip-card:hover .t{color:var(--gold-lt)}
+  .duo-model:hover .img img,.xs:hover .img img,.pick:hover .img img{transform:scale(1.06)}
+  .duo-figs .img:hover img{transform:scale(1.04)}
+
+  .chip{transition:background .15s,border-color .15s,color .15s,transform .2s var(--ease-out)}
+  .chip:hover{transform:translateY(-1px)}
+  .chip-thumb img{transition:transform .4s var(--ease-back)}
+  .chip:hover .chip-thumb img{transform:scale(1.18) rotate(-6deg)}
+
+  .size:not(:disabled){transition:background .15s,border-color .15s,color .15s,transform .2s var(--ease-out)}
+  .size:not(:disabled):hover{transform:translateY(-2px)}
+  .gal-thumbs button{transition:opacity .2s,border-color .2s}
+  .gal-thumbs button[aria-current="false"]{opacity:.72}
+  .gal-thumbs button:hover{opacity:1}
+
+  .logo b{display:inline-block;transition:transform .5s var(--ease-back)}
+  .logo:hover b{transform:rotate(-10deg) scale(1.1)}
+}
+.size:not(:disabled):active{transform:scale(.95)}
+
+/* soulignement de navigation qui se trace depuis la gauche */
+.nav a{position:relative}
+.nav a[aria-current="page"]{box-shadow:none}
+.nav a::after{content:"";position:absolute;left:10px;right:10px;bottom:8px;height:2px;background:var(--gold-lt);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease-out)}
+.nav a[aria-current="page"]::after{transform:scaleX(1)}
+@media (hover:hover){.nav a:hover::after{transform:scaleX(1)}}
+
+/* ---------- panneaux ---------- */
+/* menu mobile : révélation circulaire depuis le bouton, liens en cascade */
+.menu:not([hidden]){animation:kz-menu-in .5s var(--ease-out) both}
+.menu:not([hidden]) nav a,.menu:not([hidden]) .menu-sub a,.menu:not([hidden]) .menu-foot{animation:kz-rise .5s var(--ease-out) var(--d,0s) both}
+.menu nav a:nth-child(1){--d:.08s}.menu nav a:nth-child(2){--d:.12s}.menu nav a:nth-child(3){--d:.16s}.menu nav a:nth-child(4){--d:.2s}.menu nav a:nth-child(5){--d:.24s}
+.menu .menu-sub a{--d:.28s}.menu .menu-foot{--d:.32s}
+@keyframes kz-menu-in{from{clip-path:circle(0 at calc(100% - 38px) 32px)}to{clip-path:circle(150% at calc(100% - 38px) 32px)}}
+@keyframes kz-rise{from{opacity:0;transform:translateY(18px)}}
+
+/* boîte de dialogue « Aide à la taille » : entrée et sortie */
+dialog{opacity:0;transform:translateY(14px) scale(.97);transition:opacity .18s var(--ease-in),transform .18s var(--ease-in),overlay .18s allow-discrete,display .18s allow-discrete}
+dialog[open]{opacity:1;transform:none;transition:opacity .26s var(--ease-out-soft),transform .32s var(--ease-out),overlay .32s allow-discrete,display .32s allow-discrete}
+@starting-style{dialog[open]{opacity:0;transform:translateY(14px) scale(.97)}}
+dialog::backdrop{opacity:0;transition:opacity .18s linear,overlay .18s allow-discrete,display .18s allow-discrete}
+dialog[open]::backdrop{opacity:1;transition-duration:.26s}
+@starting-style{dialog[open]::backdrop{opacity:0}}
+
+/* barre d'achat : monte en ease-out, redescend plus vite */
+.sticky-buy{transition:transform .2s var(--ease-in)}
+.sticky-buy.is-on{transition:transform .38s var(--ease-out)}
+
+/* accordéons : hauteur fluide là où le navigateur le permet, contenu en fondu */
+@supports (interpolate-size:allow-keywords){
+  :root{interpolate-size:allow-keywords}
+  .acc::details-content{height:0;overflow:clip;transition:height .36s var(--ease-out),content-visibility .36s allow-discrete}
+  .acc[open]::details-content{height:auto}
+}
+.acc[open]>.acc-body{animation:kz-acc .42s var(--ease-out) both}
+@keyframes kz-acc{from{opacity:0;transform:translateY(-8px)}}
+.acc>summary::after{transition:transform .3s var(--ease-back)}
+
+/* rail WhatsApp : glisse à l'ouverture, puis deux impulsions pour se signaler */
+.rail:not([hidden]){animation:kz-rail-in .6s var(--ease-out) .6s both}
+@keyframes kz-rail-in{from{translate:-110% 0}}
+.rail-dot{position:relative}
+.rail-dot::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--wa);opacity:0;animation:kz-ping 1.4s var(--ease-out) 2.2s 2}
+@keyframes kz-ping{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(2.1)}}
+
+/* ---------- micro-interactions (déclenchées par motion.js) ---------- */
+.kz-burst{position:fixed;width:6px;height:6px;background:var(--gold-lt);pointer-events:none;z-index:200}
+.prog span{transform-origin:left}
