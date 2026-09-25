@@ -99,7 +99,7 @@
   <div class="wrap hero-in">
     <div class="hero-copy">
       <p class="eyebrow">Livraison offerte partout au Maroc</p>
-      <h1 id="hero-title">${esc(C.home.title)}</h1>
+      <h1 id="hero-title">${esc(C.home.title).replace(/,\s+/, ',<br>')}</h1>
       <p class="hero-lead">Retrouvez les modèles FC Barcelone, Real Madrid et Bayern Munich de la saison 2026/2027. Choisissez votre taille, vérifiez le colis devant le livreur et payez à la réception.</p>
       <ul class="promises">${PROMISES}</ul>
       <div class="hero-cta"><a class="btn btn--paper btn--lg" href="#/maillots">Choisir mon maillot</a><a class="btn btn--ghost-ink btn--lg" href="#/duo">2 maillots à 499 DH</a></div>
@@ -519,7 +519,23 @@ ${scarcity(slug, true)}
     closeMenu();
     stickyInit(!!out.sticky);
     if (out.after) out.after();
+    fitTitles();
   }
+
+  /* ---------- titres : deux lignes au plus à partir de 768 px ---------- */
+  function fitTitles() {
+    $$('main h1').forEach(h => {
+      h.style.fontSize = '';
+      if (innerWidth < 768 || !h.offsetParent) return;
+      let size = parseFloat(getComputedStyle(h).fontSize);
+      while (h.getBoundingClientRect().height > parseFloat(getComputedStyle(h).lineHeight) * 2.5 && size > 24) {
+        size -= 1; h.style.fontSize = size + 'px';
+      }
+    });
+  }
+  let fitFrame = 0;
+  window.addEventListener('resize', () => { cancelAnimationFrame(fitFrame); fitFrame = requestAnimationFrame(fitTitles); });
+  if (document.fonts) document.fonts.ready.then(fitTitles);
 
   /* ---------- menu, rail ---------- */
   function openMenu() { $('#menu').hidden = false; $('#burger').setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; $('#menu-close').focus(); }

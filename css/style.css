@@ -143,9 +143,9 @@ p+p{margin-top:.8em}
 .hero{position:relative;color:var(--on-ink);background:var(--ink-deep);min-height:max(560px,calc(100svh - var(--hdr)));display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
 .hero-img{position:absolute;inset:0}
 .hero-img img{object-position:center 28%}
-.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,17,22,.92) 0,rgba(14,17,22,.82) 38%,rgba(14,17,22,.25) 70%,rgba(14,17,22,.15) 100%),linear-gradient(to top,rgba(14,17,22,.95) 0,rgba(14,17,22,0) 45%)}
+.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,17,22,.92) 0,rgba(14,17,22,.84) 46%,rgba(14,17,22,.3) 74%,rgba(14,17,22,.15) 100%),linear-gradient(to top,rgba(14,17,22,.95) 0,rgba(14,17,22,0) 45%)}
 .hero-in{position:relative;z-index:1;padding-top:40px;padding-bottom:28px;display:flex;flex-direction:column;gap:clamp(18px,3vh,32px)}
-.hero-copy{max-width:640px;display:flex;flex-direction:column;gap:16px}
+.hero-copy{max-width:none;display:flex;flex-direction:column;gap:16px}
 .hero h1{font-size:clamp(38px,4.6vw,76px);font-weight:800;line-height:.98}
 .hero-lead{font-size:clamp(15px,1.2vw,17px);color:var(--on-ink-2);max-width:560px}
 .promises{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 24px}
@@ -255,7 +255,7 @@ tr.is-hit td{background:var(--inset)}
 
 /* Page head */
 .page-head{background:var(--ink-deep);color:var(--on-ink);padding:clamp(40px,6vw,80px) 0 clamp(32px,4vw,56px)}
-.page-head h1{font-size:clamp(32px,4.4vw,60px);font-weight:800;max-width:900px}
+.page-head h1{font-size:clamp(32px,4.4vw,60px);font-weight:800;max-width:1180px}
 .page-head .lead{color:var(--on-ink-2);max-width:680px;margin-top:16px;font-size:16px}
 .page-head .lead p+p{margin-top:.6em}
 .crumbs{font:500 12.5px/1.4 var(--f-text);color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;padding:14px 0}
@@ -465,7 +465,7 @@ dialog::backdrop{background:rgba(14,17,22,.55)}
 @media (min-width:1024px){
   .hero{min-height:0;height:calc(100svh - var(--hdr));max-height:none}
   .hero-in{padding-top:clamp(16px,3vh,32px);padding-bottom:clamp(14px,2.4vh,24px);gap:clamp(12px,2.2vh,24px)}
-  .hero h1{font-size:clamp(34px,min(4.4vw,7.4vh),76px)}
+  .hero h1{font-size:clamp(30px,min(3.2vw,7.4vh),76px);max-width:64vw}
   .hero-copy{gap:clamp(10px,1.6vh,16px)}
   .strip-card .img{max-height:min(11vh,104px);aspect-ratio:auto;height:min(11vh,104px)}
   .strip-head{padding-top:clamp(10px,1.6vh,16px)}
