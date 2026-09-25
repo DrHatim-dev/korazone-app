@@ -18,7 +18,7 @@ designs in the target codebase** with its own framework, component structure and
 Native, Swift/SwiftUI, Flutter, or a mobile web app). If no app codebase exists yet, pick the most
 appropriate environment and implement the design there.
 
-`KoraZone App.dc.html` is a comparison board: it contains three turns of options in one file.
+`maquette.html` is a comparison board: it contains three turns of options in one file.
 **Turn 3 (`3a`, `3b`) is the selected direction and the scope of this handoff.** Turn 2 (`2a`, `2b`)
 holds the premium/scarcity exploration the wording comes from, and turn 1 (`1a`–`1f`) holds the
 first round (tab-bar home, classic form, size helper, WhatsApp thread). Turns 1 and 2 are kept as
@@ -317,10 +317,25 @@ remove them:
 - **Turn 5 (5a) — desktop 1440 × 900**: the jersey full-bleed on the left (rarity, promise, six-model strip); on the right, a 540 px paper panel carrying the whole flow (size → duo → reserve → delivery form → confirmation) without leaving the page.
 
 ## Files
-- `KoraZone App.dc.html` — the design reference. **Turn 3 (`3a`, `3b`) is in scope**; turns 2 and 1
+- `maquette.html` — the design reference. **Turn 3 (`3a`, `3b`) is in scope**; turns 2 and 1
   are earlier options kept for reference.
 - `ios-frame.jsx`, `support.js` — supporting files so the reference opens in a browser (fonts need a
   network connection).
 - `assets/` — the client's product photos used by the reference.
-- Open `KoraZone App.dc.html` directly in a browser; the board pans and zooms, and every frame is
+- Open `maquette.html` directly in a browser; the board pans and zooms, and every frame is
   interactive (feed, size selection, reservation countdown, order steps, rail collapse).
+
+## Live site (`index.html`)
+`index.html` is the deployed storefront built from this handoff: screen `5a` fills the window on
+computers, and `3a` → `3b` run full-screen on phones (below 900 px wide). The board is kept as
+`maquette.html`.
+
+- **Orders go to WhatsApp.** Confirming opens `wa.me/212601122488` with the jersey, size, total,
+  contact details and a generated `KZ-DDMM-NNNN` reference already filled in. The confirmation
+  screen tells the customer to press Send, because nothing is transmitted otherwise.
+- **No invented scarcity.** Stock counts, « série close » and the order cut-off are driven by the
+  `LIVE` object at the top of the page script. While a value is `null` the element is hidden.
+  Fill it with real data to show it.
+- The 30-minute size hold was removed: nothing can hold a unit without a backend.
+- « Aide à la taille » opens a prefilled WhatsApp question. The Darija screens (`4a`, `4b`) are not
+  wired into the site yet.
